@@ -1,0 +1,29 @@
+module Counter(input wire clock, TimeStart, output reg TimerDone = 1'b0);
+reg         [27:0]      downcount;
+reg                     first;
+
+parameter freq = 200000000; //50000000 * 4 (4 seconds) Green
+initial
+begin
+downcount = freq;
+end
+
+
+always @ (posedge clock)
+begin
+timerDone = 1'b0;                   //Reset timer done at every posedge
+    if(TimeStart && downcount != 0) //Case where TimerStart is asserted
+                                    //and downcount hasn't reached 0
+    begin
+    downcount = downcount - 1;      //Decrement downcount each pos edge
+    end
+    if(downcount == 0 && TimeStart) //If downcount is 0 and TimeStart is still asserted
+    
+    begin
+    downcount = freq;               //Reset downcount
+    TimerDone = 1'b1;               //TimerDone set to high for one clock cycle
+    
+    end
+end
+
+endmodule
