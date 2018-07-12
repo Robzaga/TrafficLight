@@ -25,3 +25,99 @@ wire                      Timer_G_Finished, //Input wires to counter modules
                           Timer_Y_Finished;
                           
                           
+initial
+begin
+state = 3'b0;         //Initialize state
+end
+
+assign (G1, Y1, R1) = light1; //Set bits G1 Y1 R1 to the first light bits
+assign (G2, Y2, R2) = light2; //Set bits G2 Y2 R2 to the second light bits
+
+
+always @ (posedge clk)      // Control circuit
+begin
+case(state)
+S0: if (Timer_G_Finished)  state <= S1;     //State changes when Timer finishes
+S1: if (Timer_Y_Finished)  state <= S2;
+S2: if (Timer_R_Finished)  state <= S3;
+S3: if (Timer_G_Finished)  state <= S4;
+S4: if (Timer_Y_Finished)  state <= S5;
+S5: if (Timer_R_Finished)  state <= reset;  //Resets when Timer is done at last state
+endcase
+end
+                                            //End of control circuit
+                                            
+Counter  G(clk, timerEnable1, Timer_G_Finished); //Instantiated module for green timer
+Counter1 Y(clk, TimerEnable2, Timer_Y_Finished); //Instantiated module for yellow timer
+Counter1 R(clk, TimerEnable3, timer_R_Finished); //Instantiated module for red timer
+
+always @ (state)            //Data circuit
+begin
+case(state)
+S0: begin                   //Greenlight1 state
+    light1 <= G_light;      //Set light1 Green state
+    light2 <= R_light;      //Set light2 Red state
+    
+    TimerEnable1 <= 1'b1;   //Green TE is on
+    TimerEnable2 <= 1'b0;   //Yellow TE is off
+    TimerEnable3 <= 1'b0;   //Red TE is off
+    
+    
+    end
+    
+S1: begin                   //Yellowlight1 state
+    light1 <= Y_light;      //Set light1 Yellow state
+    light2 <= R_light;      //Set light2 Red state
+    
+    
+    TimerEnable1 <= 1'b0;   //Green TE is off
+    TimerEnable2 <= 1'b1;   //Yellow TE is on
+    timerEnable3 <= 1'b0;   //Red TE is off
+    
+    end
+    
+S2: begin                   //Redlight1 state
+    light1 <= R_light;      //Set light1 Red state
+    light2 <= R_light;      //Set light2 Red state
+    
+    
+    TimerEnable1 <= 1/b0;   //Green TE is off
+    TimerEnable2 <= 1'b0;   //Yellow TE is off
+    TimerEnable3 <= 1'b1;   //Red TE is on
+    end
+    
+S3: begin                   //Greenlight2 state
+    light1 <= R_light;      //Set light1 Red state
+    light2 <= G_light;      //Set light2 Green state
+    
+    
+    TimerEnable1 <= 1/b1;   //Green TE is on
+    TimerEnable2 <= 1'b0;   //Yellow TE is off
+    TimerEnable3 <= 1'b0;   //Red TE is off
+    end
+    
+S4: begin                   //Yellowlight2 state
+    light1 <= R_light;      //Set light1 Red state
+    light2 <= Y_light;      //Set light2 Yellow state
+    
+    
+    TimerEnable1 <= 1/b0;   //Green TE is off
+    TimerEnable2 <= 1'b1;   //Yellow TE is on
+    TimerEnable3 <= 1'b0;   //Red TE is off
+    end
+    
+S5: begin                   //Redlight2 state
+    light1 <= R_light;      //Set light1 Red state
+    light2 <= R_light;      //Set light2 Red state
+    
+    
+    TimerEnable1 <= 1/b0;   //Green TE is off
+    TimerEnable2 <= 1'b0;   //Yellow TE is off
+    TimerEnable3 <= 1'b1;   //Red TE is on
+    end
+
+endcase
+
+end
+
+endmodule
