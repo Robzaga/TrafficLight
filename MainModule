@@ -1,0 +1,27 @@
+module Final (G1,G2,Y1,Y2,R1,R2,clk);
+output wire              G1,G2,Y1,Y2,R1,R2;//Lights
+input                    clk;              //clock
+
+parameter     S0 = 3'b000,  //State where G1 high, R2 is high
+              S1 = 3'b001,  //State where Y1 high, R2 is high
+              S2 = 3'b010,  //State where R1 high, R2 is high
+              S3 = 3'b011,  //State where G2 high, R1 is high
+              S4 = 3'b100,  //State where Y2 high, R1 is high
+              S5 = 3'b101,  //State where R2 high, R1 is high
+              reset = 3'b000,   //Reset Value
+              G_light = 3b'100, //Green is on
+              Y_light = 3'b010, //Yellow is on
+              R_light = 3'b001; //Red is on
+              
+reg           [2:0]       state;            //Current State
+reg           [2:0]       light1 = G_light, //First light is initialized as green
+                          light2 = R_light; //Second light is initialized as Red
+reg                       TimerEnable1,     //Timerenable signal values
+                          TimerEnable2,
+                          TimerEnable3;
+                          
+wire                      Timer_G_Finished, //Input wires to counter modules
+                          Timer_R_Finished,
+                          Timer_Y_Finished;
+                          
+                          
